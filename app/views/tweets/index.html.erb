@@ -1,0 +1,11 @@
+<h1>
+Wannabe Twitter
+</h1>
+
+<%= link_to "Create Tweet", new_tweets_path %>
+
+<% @tweets.each do |tweet| %>
+    <div>
+      <b>Tweet content:</b> <%= tweet.content %><br/>
+    </div>
+  <% end %>

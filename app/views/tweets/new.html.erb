@@ -1,0 +1,5 @@
+<%= form_with url: "/tweets" do |form| %>
+    <%= form.label :content, "Tweet:" %>
+    <%= form.text_field :content %>
+    <%= form.submit "Submit" %>
+  <% end %>
