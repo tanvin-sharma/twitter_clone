@@ -1,5 +1,5 @@
 RSpec.describe 'Users API', type: :request do
-	describe 'GET' do
+	describe 'GET /api/users' do
 		subject(:result) do
 			get '/api/users'
 			response
@@ -18,7 +18,7 @@ RSpec.describe 'Users API', type: :request do
 		end
 	end
 
-	describe 'GET' do 
+	describe 'GET /api/users/:id' do 
 		subject(:result) do 
 			get "/api/users/#{user_id}"
 			response
@@ -31,7 +31,7 @@ RSpec.describe 'Users API', type: :request do
 			it { is_expected.to have_http_status(200) }
 
 			it 'returns the user' do 
-				expect(JSON.parse(result.body)['id']).to eq(user_id)
+				expect(JSON.parse(result.body)['id']).to eq(user_id) # REVIEW: Better check all the fields
 			end
 		end
 
@@ -45,22 +45,22 @@ RSpec.describe 'Users API', type: :request do
 		end
 	end
 
-	describe 'POST' do 
-		subject(:result) do
-			post '/api/users', params: valid_params
-			response
-		end
-		context 'request is valid' do
-			let(:valid_params) { { name: 'tanvin', handle: 'tanvin', email: 'tanvin@test.com', bio: 'some nice bio' } }
-			it { is_expected.to have_http_status(201) }
+	# describe 'POST' do
+	# 	subject(:result) do
+	# 		post '/api/users', params: valid_params
+	# 		response
+	# 	end
+	# 	context 'request is valid' do
+	# 		let(:valid_params) { { name: 'tanvin', handle: 'tanvin', email: 'tanvin@test.com', bio: 'some nice bio' } }
+	# 		it { is_expected.to have_http_status(201) }
 
-			it 'creates_user' do 
-				expect { result }.to change(User, :count).by(1)
-			end
-		end
-	end
+	# 		it 'creates_user' do 
+	# 			expect { result }.to change(User, :count).by(1)
+	# 		end
+	# 	end
+	# end
 
-	describe  'POST' do
+	describe  'POST' do # REVIEW: fix the describes in accordance with what above
 		subject(:result) do
 			post '/api/users', params: valid_params
 			response
@@ -70,6 +70,9 @@ RSpec.describe 'Users API', type: :request do
 			let(:valid_params) { { name: "tanvin", handle: "tanvin", email: "tanvin", bio:'some nice bio' } }
 
 			it { is_expected.to have_http_status(201) }
+
+			# REVIEW: Better check the response here as well
+			# Like `expect(JSON.parse(result.body) blah blah blah`
 
 			it 'creates an user' do
 				expect { result }.to change(User, :count).by(1)
@@ -98,5 +101,8 @@ RSpec.describe 'Users API', type: :request do
     before { delete "/api/users/#{user_id}" }
 
     specify { expect(response).to have_http_status(204) }
+		# REVIEW: Expect to change User, :count by -1
   end
+
+	# REVIEW: test for update is missing
 end

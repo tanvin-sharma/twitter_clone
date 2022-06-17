@@ -29,27 +29,29 @@ RSpec.describe 'Comments API', type: :request do
     end
   end
 
-  # describe 'PUT /api/comments/:id' do
-  #   subject(:result) do 
-  #     put "/api/comments/#{comment.id}"
-  #     response
-  #   end
+  describe 'PUT /api/comments/:id' do
+    subject(:result) do 
+      put "/api/comments/#{comment.id}", params: valid_params
+      response
+    end
 
-  #   let!(:comment) { Comment.create(content: 'comment content', user_id: user1.id, tweet_id: tweet.id) }
+    let!(:comment) { Comment.create(content: 'comment content', user_id: user1.id, tweet_id: tweet.id) }
 
-  #   context 'updating comment' do
-  #     let(:valid_params) { { content: "random content", user_id: user1.id, tweet_id: tweet.id } }
+    context 'updating comment' do
+      let(:valid_params) { { content: "random content", user_id: user1.id, tweet_id: tweet.id } }
 
-  #     it { is_expected.to have_http_status(200) }
+      it { is_expected.to have_http_status(200) }
 
-  #     it 'updates the comment' do
-  #       expect { result }.to change { comment.reload.content }.from("comment content").to("random content")
-  #     end
-  #     it 'updates the response' do
-  #       expect(JSON.parse(result.body)).to match(hash_including("content"=>"random content")) 
-  #     end
-  #   end
-  # end
+      it 'updates the comment' do
+        expect { result }.to change { comment.reload.content }.from("comment content").to("random content")
+      end
+      it 'updates the response' do
+        expect(JSON.parse(result.body)).to match(hash_including("content"=>"random content")) 
+      end
+    end
+
+    # REVIEW: invalid params missing
+  end
 
   describe 'DELETE' do
     let!(:comment) { Comment.create(content: 'some content', user_id: user1.id) }

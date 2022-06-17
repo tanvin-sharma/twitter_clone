@@ -66,7 +66,7 @@ RSpec.describe 'Tweets API', type: :request do
       end
     end
 
-    context 'tweet doesnt exist' do
+    context "tweet doesn't exist" do
       let!(:tweet_id) { 0 }
 
       it { is_expected.to have_http_status(404) }
