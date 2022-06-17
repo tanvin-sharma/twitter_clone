@@ -36,7 +36,7 @@ module Api
     private 
 
     def user_params
-      params.permit(:name, :handle, :email)
+      params.permit(:name, :handle, :email) # REVIEW: bio left :(
     end
   end
 end
