@@ -1,7 +1,7 @@
 RSpec.describe 'Tweets API', type: :request do
   let!(:user) { User.create(name: "tanvin", handle: "tanvin", email: "tanvin@test.com") }
 
-  describe 'GET /api/tweets' do
+  describe 'GET' do
     subject(:result) do
       get "/api/tweets"
       response
@@ -19,13 +19,13 @@ RSpec.describe 'Tweets API', type: :request do
     end
   end
 
-  describe 'POST /api/tweets' do
+  describe 'POST' do
     subject(:result) do 
       post "/api/tweets", params: valid_params
       response
     end
 
-    context 'on submitting valid request' do
+    context 'valid request' do
       let(:valid_params) { { content: "random content", user_id: user.id } }
 
       it { is_expected.to have_http_status(201) }
@@ -35,7 +35,7 @@ RSpec.describe 'Tweets API', type: :request do
       end
     end
 
-    context 'on submitting invalid request' do
+    context 'invalid request' do
       before { post '/api/tweets', params: {} }
       
       it { expect(response).to have_http_status(422) }
@@ -49,13 +49,13 @@ RSpec.describe 'Tweets API', type: :request do
     end
   end
 
-  describe 'GET /api/tweets/:id' do
+  describe 'GET' do
     subject(:result) do
       get "/api/tweets/#{tweet_id}"
       response
     end
 
-    context 'when tweet exists' do
+    context 'tweet exists' do
       let!(:tweet) { Tweet.create(content: 'random content', user_id: user.id) }
       let!(:tweet_id) { tweet.id }
 
@@ -78,7 +78,7 @@ RSpec.describe 'Tweets API', type: :request do
   end
 
 
-  describe 'PUT /api/tweets/:id' do
+  describe 'PUT' do
     let!(:tweet) { Tweet.create(content: 'random content', user_id: user.id) }
     let!(:tweet_id) { tweet.id }
 
@@ -87,19 +87,19 @@ RSpec.describe 'Tweets API', type: :request do
       response
     end
 
-    context 'on submitting valid request' do
+    context ' valid request' do
       it { is_expected.to have_http_status(200) }
 
-      it 'updates the tweet' do
+      it 'updates tweet' do
         expect { result }.to change { tweet.reload.content }.from("random content").to("edited")
       end
 
-      it 'updates the response' do
+      it 'updates response' do
         expect(JSON.parse(result.body)).to match(hash_including("content"=>"edited")) 
       end
     end
 
-    context 'on submitting invalid request' do
+    context 'invalid request' do
       before { put "/api/tweets/#{tweet_id}", params: { content: "" }; response }
 
       specify { expect(response).to have_http_status(422) }
@@ -112,7 +112,7 @@ RSpec.describe 'Tweets API', type: :request do
     end
   end
 
-  describe 'DELETE /api/tweets/:id' do
+  describe 'DELETE' do
     let!(:tweet) { Tweet.create(content: 'random content', user_id: user.id) }
     let!(:tweet_id) { tweet.id }
 

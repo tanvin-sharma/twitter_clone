@@ -2,7 +2,7 @@ RSpec.describe 'Comments API', type: :request do
   let!(:user1) { User.create(name: "tanvin", handle: "tanvin", email: "tanvin@test.com") }
   let!(:tweet) { user1.tweets.create(content: 'this is some content') }
 
-  describe 'POST /api/comments' do
+  describe 'POST' do
     subject(:result) do 
       post "/api/comments", params: valid_params
       response
@@ -51,7 +51,7 @@ RSpec.describe 'Comments API', type: :request do
   #   end
   # end
 
-  describe 'DELETE /api/comments/:id' do
+  describe 'DELETE' do
     let!(:comment) { Comment.create(content: 'some content', user_id: user1.id) }
     let!(:comment_id) { tweet.id }
 

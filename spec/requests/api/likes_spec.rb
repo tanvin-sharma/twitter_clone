@@ -2,7 +2,7 @@ RSpec.describe 'Likes API', type: :request do
   let!(:user1) { User.create(name: "tanvin", handle: "tanvin", email: "tanvin@test.com") }
   let!(:tweet) { user1.tweets.create(content: 'this is some content') }
 
-  describe 'POST /api/likes' do
+  describe 'POST' do
     subject(:result) do 
       post "/api/likes", params: valid_params
       response
@@ -18,7 +18,7 @@ RSpec.describe 'Likes API', type: :request do
     end
   end
 
-  describe 'DELETE /api/likes' do
+  describe 'DELETE' do
     let!(:like) { Like.create(tweet_id: tweet.id, user_id: user1.id) }
 
     before { delete "/api/likes/#{like.id}" }

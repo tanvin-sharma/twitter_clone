@@ -1,5 +1,5 @@
 RSpec.describe 'Users API', type: :request do
-	describe 'GET /api/users' do
+	describe 'GET' do
 		subject(:result) do
 			get '/api/users'
 			response
@@ -18,13 +18,13 @@ RSpec.describe 'Users API', type: :request do
 		end
 	end
 
-	describe 'GET /api/users/:id' do 
+	describe 'GET' do 
 		subject(:result) do 
 			get "/api/users/#{user_id}"
 			response
 		end
 
-		context 'when user already exists' do 
+		context 'user already exists' do 
 			let!(:user) { User.create(name: "Tanvin", handle: "tanvin", email: 'tanvin@test.com')}
 			let!(:user_id) { user.id }
 
@@ -35,7 +35,7 @@ RSpec.describe 'Users API', type: :request do
 			end
 		end
 
-		context 'when user doesnt exist' do 
+		context 'user doesnt exist' do 
 			let(:user_id) { 5 }
 			it {is_expected.to have_http_status(404)}
 
@@ -45,12 +45,12 @@ RSpec.describe 'Users API', type: :request do
 		end
 	end
 
-	describe 'POST /api/users' do 
+	describe 'POST' do 
 		subject(:result) do
 			post '/api/users', params: valid_params
 			response
 		end
-		context 'when the request is valid' do
+		context 'request is valid' do
 			let(:valid_params) { { name: 'tanvin', handle: 'tanvin', email: 'tanvin@test.com', bio: 'some nice bio' } }
 			it { is_expected.to have_http_status(201) }
 
@@ -60,13 +60,13 @@ RSpec.describe 'Users API', type: :request do
 		end
 	end
 
-	describe  'POST /api/users' do
+	describe  'POST' do
 		subject(:result) do
 			post '/api/users', params: valid_params
 			response
 		end
 
-		context 'when the request is valid' do
+		context 'request is valid' do
 			let(:valid_params) { { name: "tanvin", handle: "tanvin", email: "tanvin", bio:'some nice bio' } }
 
 			it { is_expected.to have_http_status(201) }
@@ -76,7 +76,7 @@ RSpec.describe 'Users API', type: :request do
 			end
 		end
 
-		context 'when the request is invalid' do
+		context 'request is invalid' do
 			before { post '/api/users', params: {} }
 
 			specify { expect(response).to have_http_status(422) }
@@ -91,7 +91,7 @@ RSpec.describe 'Users API', type: :request do
 		end
 	end
 
-	describe 'DELETE /api/users/:id' do
+	describe 'DELETE' do
     let!(:user) { User.create(name: "tanvin", handle: "tanvin", email: "tanvin", bio:'some nice bio') }
     let!(:user_id) { User.all.first.id }
 
