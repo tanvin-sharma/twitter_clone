@@ -1,0 +1,57 @@
+<h1>New User</h1>
+
+<div>
+  <%= form_with model: @user do |form| %>
+    <div>
+      <%= form.label :name %><br>
+      <%= form.text_field :name %>
+      <% @user.errors.full_messages_for(:title).each do |message| %>
+        <div><%= message %></div>
+      <% end %>
+    </div>
+    <br>
+    <div>
+      <%= form.label :handle %><br>
+      <%= form.text_field :handle %><br>
+      <% @user.errors.full_messages_for(:body).each do |message| %>
+        <div><%= message %></div>
+      <% end %>
+    </div>
+    <br>
+    <div>
+      <%= form.label :email %><br>
+      <%= form.text_field :email %><br>
+      <% @user.errors.full_messages_for(:body).each do |message| %>
+        <div><%= message %></div>
+      <% end %>
+    </div>
+    <br>
+    <div>
+      <%= form.label :bio %><br>
+      <%= form.text_area :bio %><br>
+      <% @user.errors.full_messages_for(:body).each do |message| %>
+        <div><%= message %></div>
+      <% end %>
+    </div>
+    <br>
+    <div>
+      <%= form.label :password %><br>
+      <%= form.password_field  :password %><br>
+      <% @user.errors.full_messages_for(:body).each do |message| %>
+        <div><%= message %></div>
+      <% end %>
+    </div>
+    <br>
+    <div>
+      <%= form.label :password_confirmation %><br>
+      <%= form.password_field  :password_confirmation %><br>
+      <% @user.errors.full_messages_for(:body).each do |message| %>
+        <div><%= message %></div>
+      <% end %>
+    </div>
+    <br><br>
+    <div>
+      <%= form.submit %>
+    </div>
+  <% end %>
+</div>

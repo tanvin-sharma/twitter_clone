@@ -12,5 +12,12 @@ Rails.application.routes.draw do
     resources :likes, only: %i[index show create update destroy]
     resources :comments, only: %i[create update destroy]
     resources :follows
+    post '/auth/login', to: 'authentication#login'
   end
+  get  '/signup',  to: 'users#new'
+  post '/signup',  to: 'users#create'
+
+  get    '/login',   to: 'sessions#new'
+  post   '/login',   to: 'sessions#create'
+  delete '/logout',  to: 'sessions#destroy'
 end

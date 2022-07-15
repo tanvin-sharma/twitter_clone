@@ -75,3 +75,5 @@ end
 gem "active_model_serializers"
 gem "rspec-rails"
 gem "shoulda-matchers"
+gem "bcrypt"
+gem "jwt"
