@@ -1,5 +1,5 @@
 RSpec.describe 'Likes API', type: :request do
-  let!(:user1) { User.create(name: "tanvin", handle: "tanvin", email: "tanvin@test.com") }
+  let!(:user1) { User.create(name: "tanvin", handle: "tanvin", email: "tanvin@test.com", password: "tanvin") }
   let!(:tweet) { user1.tweets.create(content: 'this is some content') }
 
   # REVIEW: Add tests for all database changes (Like.count and tweet.no_of_likes) for both requests

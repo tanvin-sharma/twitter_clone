@@ -1,5 +1,5 @@
 RSpec.describe 'Comments API', type: :request do
-  let!(:user1) { User.create(name: "tanvin", handle: "tanvin", email: "tanvin@test.com") }
+  let!(:user1) { User.create(name: "tanvin", handle: "tanvin", email: "tanvin@test.com", password: "tanvin") }
   let!(:tweet) { user1.tweets.create(content: 'this is some content') }
 
   describe 'POST' do

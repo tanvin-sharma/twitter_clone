@@ -1,5 +1,5 @@
 RSpec.describe 'Tweets API', type: :request do
-  let!(:user) { User.create(name: "tanvin", handle: "tanvin", email: "tanvin@test.com") }
+  let!(:user) { User.create(name: "tanvin", handle: "tanvin", email: "tanvin@test.com", password: "tanvin", password_confirmation: "tanvin") }
 
   describe 'GET' do
     subject(:result) do
