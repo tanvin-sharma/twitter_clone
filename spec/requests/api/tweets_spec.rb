@@ -59,20 +59,10 @@ RSpec.describe 'Tweets API', type: :request do
       let!(:tweet) { Tweet.create(content: 'random content', user_id: user.id) }
       let!(:tweet_id) { tweet.id }
 
-      it { is_expected.to have_http_status(200) }
+      specify { is_expected.to have_http_status(200) }
 
-      it 'return tweet' do
+      specify 'return tweet' do
         expect(JSON.parse(result.body)['id']).to eq(tweet_id)
-      end
-    end
-
-    context "tweet doesn't exist" do
-      let!(:tweet_id) { 0 }
-
-      it { is_expected.to have_http_status(404) }
-
-      it 'not found msg' do 
-        expect(JSON.parse(result.body)).to eq("error" => "Couldn't find Tweet with 'id'=0")
       end
     end
   end
