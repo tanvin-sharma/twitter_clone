@@ -1,5 +1,5 @@
 class UsersController < ApplicationController
-    before_action :authorize_user, only: [:create]
+    before_action :authorize_user, only: [:index, :show]
     def index
         @users = User.all
     end
@@ -13,11 +13,12 @@ class UsersController < ApplicationController
     end
 
     def create
-        @user = User.create(user_params)
-
-        if @user.save
+        @user = User.new(user_params)
+        puts @user.inspect
+        
+        if @user.save!
             session[:user_id] = @user.id
-            redirect_to user_path(@user), notice: "successfully created user account"
+            redirect_to login_path, notice: "successfully created user account"
         else
             render :new, status: :unprocessable_entity
         end
