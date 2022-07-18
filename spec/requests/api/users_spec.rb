@@ -1,108 +1,344 @@
 RSpec.describe 'Users API', type: :request do
-	describe 'GET /api/users' do
-		subject(:result) do
-			get '/api/users'
-			response
-		end
+  context 'User is not authorized' do
+    context '#index' do
+      subject do
+        get '/api/users#index'
+        JSON.parse(response.body)
+      end
+      specify { expect(subject).to include('errors' => 'Nil JSON web token') }
+    end
 
-		it { is_expected.to have_http_status(200) }
-		specify { expect(JSON.parse(result.body)).to eq([]) }
+    context '#show' do
+      let!(:user) do
+        User.create(name: "tanvin", handle: "tanvin", bio: "nice", email: "tanvin@toptal.com", password: "123", password_confirmation: "123")
+      end
+      subject do
+        get "/api/users/#{user.id}"
+        JSON.parse(response.body)
+      end
+      specify { expect(subject).to include('errors' => 'Nil JSON web token') }
+    end
 
-		context 'when has users' do
-			let!(:user) { User.create(name: "Tanvin", bio: 'this is some bio', handle: "tanvin", email: "tanvin@test.com") }
-			let(:json) { JSON.parse(result.body) }
+    context '#update' do
+      let!(:user) do
+        User.create(name: "tanvin", handle: "tanvin", bio: "nice", email: "tanvin@toptal.com", password: "123", password_confirmation: "123")
+      end
+      subject do
+        get "/api/users/#{user.id}", params: { user: { name: 'AB' } }
+        JSON.parse(response.body)
+      end
+      specify { expect(subject).to include('errors' => 'Nil JSON web token') }
+    end
 
-			it { expect(json).not_to be_empty }
-
-			it { expect(json).to match([hash_including("name" => "Tanvin", "bio" => 'this is some bio', "handle" => "tanvin", "email" => "tanvin@test.com")]) }
-		end
-	end
-
-	describe 'GET /api/users/:id' do 
-		subject(:result) do 
-			get "/api/users/#{user_id}"
-			response
-		end
-
-		context 'user already exists' do 
-			let!(:user) { User.create(name: "Tanvin", handle: "tanvin", email: 'tanvin@test.com')}
-			let!(:user_id) { user.id }
-
-			it { is_expected.to have_http_status(200) }
-
-			it 'returns the user' do 
-				expect(JSON.parse(result.body)['id']).to eq(user_id) # REVIEW: Better check all the fields
-			end
-		end
-
-		context 'user doesnt exist' do 
-			let(:user_id) { 5 }
-			it {is_expected.to have_http_status(404)}
-
-			it 'returns a not found message' do 
-				expect(JSON.parse(result.body)).to eq("error"=> "Couldn't find User with 'id'=5")
-			end
-		end
-	end
-
-	# describe 'POST' do
-	# 	subject(:result) do
-	# 		post '/api/users', params: valid_params
-	# 		response
-	# 	end
-	# 	context 'request is valid' do
-	# 		let(:valid_params) { { name: 'tanvin', handle: 'tanvin', email: 'tanvin@test.com', bio: 'some nice bio' } }
-	# 		it { is_expected.to have_http_status(201) }
-
-	# 		it 'creates_user' do 
-	# 			expect { result }.to change(User, :count).by(1)
-	# 		end
-	# 	end
-	# end
-
-	describe  'POST' do # REVIEW: fix the describes in accordance with what above
-		subject(:result) do
-			post '/api/users', params: valid_params
-			response
-		end
-
-		context 'request is valid' do
-			let(:valid_params) { { name: "tanvin", handle: "tanvin", email: "tanvin", bio:'some nice bio' } }
-
-			it { is_expected.to have_http_status(201) }
-
-			# REVIEW: Better check the response here as well
-			# Like `expect(JSON.parse(result.body) blah blah blah`
-
-			it 'creates an user' do
-				expect { result }.to change(User, :count).by(1)
-			end
-		end
-
-		context 'request is invalid' do
-			before { post '/api/users', params: {} }
-
-			specify { expect(response).to have_http_status(422) }
-
-			it 'returns a failure message' do
-				expect(JSON.parse(response.body)).to match({
-					"name"=>["can't be blank"],
-					"handle"=>["can't be blank"],
-					"email"=>["can't be blank"]
-				}) 
-			end
-		end
-	end
-
-	describe 'DELETE' do
-    let!(:user) { User.create(name: "tanvin", handle: "tanvin", email: "tanvin", bio:'some nice bio') }
-    let!(:user_id) { User.all.first.id }
-
-    before { delete "/api/users/#{user_id}" }
-
-    specify { expect(response).to have_http_status(204) }
-		# REVIEW: Expect to change User, :count by -1
+    context '#destroy' do
+      let!(:user) do
+        User.create(name: "tanvin", handle: "tanvin", bio: "nice", email: "tanvin@toptal.com", password: "123", password_confirmation: "123")
+      end
+      subject do
+        delete "/api/users/#{user.id}"
+        JSON.parse(response.body)
+      end
+      specify { expect(subject).to include('errors' => 'Nil JSON web token') }
+    end
   end
 
-	# REVIEW: test for update is missing
+
+  context 'User is authorized' do
+    let!(:user) { User.create(name: "tanvin", handle: "tanvin", bio: "nice", email: "tanvin@toptal.com", password: "123", password_confirmation: "123") }
+    let!(:token) { JsonWebToken.encode(user_id: user.id )}
+    describe 'index' do
+      subject(:api_response) do
+        get "/api/users", headers: { "Authorization" => "#{token}" }
+        response
+      end
+
+      specify { expect(api_response).to have_http_status(200) }
+      specify { expect(JSON.parse(api_response.body).size).to eq(1) }
+
+      context 'when have Users' do
+        let!(:user) { User.create(name: "tanvin", handle: "tanvin", bio: "nice", email: "tanvin@toptal.com", password: "123", password_confirmation: "123") }
+
+        specify do
+          puts user.errors.full_messages
+          expect(JSON.parse(api_response.body)).to match([
+            hash_including({
+              "name" => "tanvin",
+              "handle" => "tanvin",
+              "bio" => "nice",
+              "email" => "tanvin@toptal.com",
+              "id" => user.id
+            })
+          ])
+        end
+      end
+    end
+
+    describe 'create' do
+      subject(:api_response) do 
+        post "/api/users", params: params
+        response
+      end
+
+      let(:params) do
+        {
+          user: {
+            name: "tanvin", handle: "tanvin", bio: "nice", email: "tanvin@toptal.com", password: "123", password_confirmation: "123"
+          }
+        }
+      end
+
+      specify { expect(api_response).to have_http_status(201) }
+      specify do
+        expect(JSON.parse(api_response.body)).to match(hash_including(
+          "name" => "tanvin",
+          "handle" => "tanvin",
+          "bio" => "nice",
+          "email" => "tanvin@toptal.com",
+          "tweets" => []
+        ))
+      end 
+
+      specify { expect { api_response }.to change(User, :count).by(1) }
+
+      context 'with wrong data' do
+        context 'without a user name' do
+          let(:params) do
+            {
+              user: {
+                handle: "tananan",
+                password: "234234"
+              }
+            }
+          end
+
+          specify { expect(api_response).to have_http_status(422) }
+          specify { expect { api_response }.not_to change(User, :count) }
+          specify { expect(JSON.parse(api_response.body)).to contain_exactly("Name can't be blank") }
+        end
+      end
+    end
+    
+    describe 'update' do    
+      subject(:api_response) do
+        patch "/api/users/#{user.id}", params: params, headers: { "Authorization" => "#{token}" }
+        response
+      end
+      let(:user) { User.create(name: "test", handle: "test", bio: "test", email: "test@toptal.com", password: "123", password_confirmation: "123") }
+      let(:params) do
+        {
+          user: {
+            name: "tanvin", handle: "tanvin", bio: "nice", email: "tanvin@toptal.com", password: "123", password_confirmation: "123"
+          }
+        }
+      end
+    
+      specify { expect(api_response).to have_http_status(200) }
+
+      specify do
+        expect(JSON.parse(api_response.body)).to match(hash_including(
+          "name" => "tanvin",
+          "handle" => "tanvin",
+          "bio" => "nice",
+          "email" => "tanvin@toptal.com",
+          "id" => user.id,
+          "tweets" => []
+        ))
+      end 
+    end
+
+    describe 'destroy' do
+      subject(:api_response) do 
+        delete "/api/users/#{user.id}", headers: { "Authorization" => "#{token}" }
+        response
+      end
+      let!(:user) { User.create(name: "tanvin", handle: "tanvin", bio: "nice", email: "tanvin@toptal.com", password: "123", password_confirmation: "123") }
+
+      specify { expect(api_response).to have_http_status(200) }
+
+      specify do
+        expect(JSON.parse(api_response.body)).to match(hash_including(
+          "name" => "tanvin",
+          "handle" => "tanvin",
+          "bio" => "nice",
+          "email" => "tanvin@toptal.com",
+          "id" => user.id,
+          "tweets" => []
+        ))
+      end
+      
+      specify { expect { api_response }.to change(User, :count).by(-1) }
+    end
+  end
 end
+
+
+# RSpec.describe 'Users API', type: :request do
+#   context 'User is not authorized' do
+#     context '#index' do
+#       subject do
+#         get '/api/users#index'
+#         JSON.parse(response.body)
+#       end
+#       specify { expect(subject).to include('errors' => 'Nil JSON web token') }
+#     end
+
+#     context '#show' do
+#       let(:user) do
+#         User.create(name: "tanvin", handle: "tanvin", bio: "tanvin", email: "tanvin@toptal.com", password: "tanvin", password_confirmation: "tanvin")
+#       end
+#       subject do
+#         get "/api/users/#{user.id}"
+#         JSON.parse(response.body)
+#       end
+#       specify { expect(subject).to include('errors' => 'Nil JSON web token') }
+#     end
+
+#     context '#update' do
+#       let(:user) do
+#         User.create(name: "tanvin", handle: "tanvin", bio: "tanvin", email: "tanvin@toptal.com", password: "tanvin", password_confirmation: "tanvin")
+#       end
+#       subject do
+#         get "/api/users/#{user.id}", params: { user: { name: 'tanvinsharma' } }
+#         JSON.parse(response.body)
+#       end
+#       specify { expect(subject).to include('errors' => 'Nil JSON web token') }
+#     end
+
+#     context '#destroy' do
+#       let(:user) do
+#         User.create(name: "tanvin", handle: "tanvin", bio: "tanvin", email: "tanvin@toptal.com", password: "tanvin", password_confirmation: "tanvin")
+#       end
+#       subject do
+#         delete "/api/users/#{user.id}"
+#         JSON.parse(response.body)
+#       end
+#       specify { expect(subject).to include('errors' => 'Nil JSON web token') }
+#     end
+#   end
+
+
+#   context 'User is authorized' do
+#     let!(:user) { User.create(name: "tanvin", handle: "tanvin", bio: "tanvin", email: "tanvin@toptal.com", password: "tanvin", password_confirmation: "tanvin" )}
+#     let!(:token) { JsonWebToken.encode(user_id: user.id )}
+#     describe 'index' do
+#       subject(:api_response) do
+#         get "/api/users", headers: { "Authorization" => "#{token}" }
+#         response
+#       end
+
+#       specify { expect(api_response).to have_http_status(200) }
+#       specify { expect(JSON.parse(api_response.body).size).to eq(1) }
+
+#       context 'when have Users' do
+#         let(:user) { User.create(name: "tanvin", handle: "tanvin", bio: "tanvin", email: "tanvin@toptal.com", password: "tanvin", password_confirmation: "tanvin" )}
+
+#         specify do
+#           puts user.errors.full_messages
+#           expect(JSON.parse(api_response.body)).to match([
+#             hash_including({
+#               "name" => "tanvin",
+#               "handle" => "tanvin",
+#               "bio" => "tanvin",
+#               "email" => "tanvin@toptal.com",
+#               "id" => user.id
+#             })
+#           ])
+#         end
+#       end
+#     end
+
+#     describe 'create' do
+#       subject(:api_response) do 
+#         post "/api/users", params: {
+#           user: {
+#             name: "tanvin", handle: "tantan", bio: "tanvin", email: "tanvin@toptal.com", password: "testtest", password_confirmation: "testtest"
+#           }
+#         }
+#         response
+#       end
+
+     
+
+#       specify { expect(api_response).to have_http_status(201) }
+#       specify do
+#         expect(JSON.parse(api_response.body)).to match(hash_including(
+#           "name" => "tanvin",
+#           "handle" => "tanvin",
+#           "bio" => "tanvin",
+#           "email" => "tanvin@toptal.com",
+#           "tweets" => []
+#         ))
+#       end 
+
+#       specify { expect { api_response }.to change(User, :count).by(1) }
+
+#       context 'with wrong data' do
+#         context 'without a user name' do
+#           let(:params) do
+#             {
+#               user: {
+#                 handle: "tanvinnnnn",
+#                 password: "abc"
+#               }
+#             }
+#           end
+
+#           specify { expect(api_response).to have_http_status(422) }
+#           specify { expect { api_response }.not_to change(User, :count) }
+#           specify { expect(JSON.parse(api_response.body)).to contain_exactly("Name can't be blank") }
+#         end
+#       end
+#     end
+    
+#     describe 'update' do    
+#       subject(:api_response) do
+#         patch "/api/users/#{user.id}", params: params, headers: { "Authorization" => "#{token}" }
+#         response
+#       end
+#       let(:user) { User.create(name: "test", handle: "123123", bio: "hello", email: "test@test.com", password: "123", password_confirmation: "123") }
+#       let(:params) do
+#         {
+#           user: {
+#             name: "hello", handle: "123123", bio: "hello", email: "test@test.com", password: "123", password_confirmation: "123"
+#           }
+#         }
+#       end
+    
+#       specify { expect(api_response).to have_http_status(200) }
+
+#       specify do
+#         expect(JSON.parse(api_response.body)).to match(hash_including(
+#           "name" => "hello",
+#           "handle" => "123123",
+#           "bio" => "hello",
+#           "email" => "test@test.com",
+#           "id" => user.id,
+#           "tweets" => []
+#         ))
+#       end 
+#     end
+
+#     describe 'destroy' do
+#       subject(:api_response) do 
+#         delete "/api/users/#{user.id}", headers: { "Authorization" => "#{token}" }
+#         response
+#       end
+#       let!(:user) { User.create(name: "tanvin", handle: "tantan", bio: "tanvin", email: "tanvin@toptal.com", password: "tanvin", password_confirmation: "tanvin") }
+
+#       specify { expect(api_response).to have_http_status(200) }
+
+#       specify do
+#         expect(JSON.parse(api_response.body)).to match(hash_including(
+#           "name" => "tanvin",
+#           "handle" => "tantan",
+#           "bio" => "tanvin",
+#           "email" => "tanvin@toptal.com",
+#           "id" => user.id,
+#           "tweets" => []
+#         ))
+#       end
+      
+#       specify { expect { api_response }.to change(User, :count).by(-1) }
+#     end
+#   end
+# end
