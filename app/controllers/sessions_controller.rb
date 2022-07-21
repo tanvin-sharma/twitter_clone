@@ -3,7 +3,7 @@ class SessionsController < ApplicationController
   end
 
   def create
-    puts params
+    # puts params
     # Add downcase & strip to email to remove accidental capitals & spaces
     user = User.find_by(email: params[:session][:email].downcase.strip)
     if user.present? && user.authenticate(params[:session][:password])

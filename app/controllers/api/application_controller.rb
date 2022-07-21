@@ -1,5 +1,6 @@
 module Api 
   class ApplicationController < ActionController::API
+    # REVIEW: if the header is not present, we should return a meaningful error like "you should authorize first"
     def authorize_request
       header = request.headers['Authorization']
       header = header.split(' ').last if header

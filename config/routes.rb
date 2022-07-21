@@ -5,7 +5,7 @@ Rails.application.routes.draw do
   # root "articles#index"
   root "tweets#index"
   resource :tweets
-  resource :users  
+  resources :users  
   namespace :api do 
     resources :users, only: %i[index show create update destroy]
     resources :tweets, only: %i[index show create update destroy]
