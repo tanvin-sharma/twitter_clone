@@ -7,7 +7,7 @@
 #   Character.create(name: "Luke", movie: movies.first)
 
 3.times do |i|
-  user = User.create(name: "User #{i}", handle: "Handle #{i}", email: "test#{i}@test.com")
+  user = User.create(name: "User #{i}", handle: "Handle #{i}", email: "test#{i}@test.com", password: "secret")
   2.times do |j|
     tweet = user.tweets.create(content: "this is test tweet content #{j}")
     tweet.comments.create(content: "this is some comment content #{j}", user_id: i, tweet_id: j)

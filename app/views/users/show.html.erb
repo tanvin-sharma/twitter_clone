@@ -2,13 +2,11 @@
 Users pages
 </h1>
 
-<% @users.each do |user|%>
-    <b> User name: </b> <%= user.name%>
-    <br>
-    <b> User handle: </b> <%= user.handle%>
-    <br>
-    <b> User bio: </b> <%= user.bio%>
-    <br>
-    <b> User email: </b> <%= user.email%>
-    <br> <br>
-<%end%>
+<b> User name: </b> <%= @user.name%>
+<br>
+<b> User handle: </b> <%= @user.handle%>
+<br>
+<b> User bio: </b> <%= @user.bio%>
+<br>
+<b> User email: </b> <%= @user.email%>
+<br> <br>
