@@ -7,7 +7,6 @@ class FindLikesJob < ApplicationJob
   def perform(user_id, ts_from, ts_to)
     user = User.find(user_id)
     start_date, end_date = Date.parse(ts_from), Date.parse(ts_to)
-    # likes = Like.select { |like| like.tweet.user_id == user.id }
     likes = Like.where(tweet:  user.tweets, created_at: (start_date..end_date))
     CSV.open("./likes_report.csv", 'w+') do |add|
       (start_date..end_date).each do |date|

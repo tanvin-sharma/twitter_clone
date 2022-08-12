@@ -1,8 +1,4 @@
-require 'csv'
-require 'sidekiq/testing'
-Sidekiq::Testing.fake!
-
-RSpec.describe 'Report Geneator' do
+RSpec.describe 'Report generation test' do
   before do
     Timecop.freeze("23/06/2022")
 
